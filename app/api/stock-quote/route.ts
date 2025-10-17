@@ -10,7 +10,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Symbol is required" }, { status: 400 });
   }
 
-  // const apiKey = process.env.FINNHUB_API_KEY;
   const apiKey = process.env.FINNHUB_API_KEY;
 
   if (!apiKey) {
@@ -21,18 +20,9 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    console.log(`[API] Fetching quote for symbol: ${symbol}`);
-    console.log(`[API] API Key present: ${!!apiKey}`);
-
-    // Initialize the API client properly
-    // const api_key = finnhub.ApiClient.instance.authentications["api_key"];
-    // api_key.apiKey = apiKey;
-
-    // const finnhubClient = new finnhub.DefaultApi();
-
     const finnhubClient = new finnhub.DefaultApi(process.env.FINNHUB_API_KEY);
 
-    return new Promise((resolve) => {
+    return new Promise<NextResponse>((resolve) => {
       finnhubClient.quote(symbol, (error: any, data: any, response: any) => {
         if (error) {
           console.error(`[API] Finnhub API error for ${symbol}:`, error);
