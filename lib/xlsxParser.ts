@@ -1,3 +1,4 @@
+import { GroupedPortfolio } from "@/types/portfolio";
 import * as XLSX from "xlsx";
 
 export interface PortfolioRow {
@@ -5,19 +6,6 @@ export interface PortfolioRow {
   volume: string;
   openPrice: string;
 }
-
-export interface GroupedPortfolio {
-  symbol: string;
-  totalVolume: number;
-  positions: PortfolioRow[];
-  averageOpenPrice: number;
-  totalValue: number;
-  currentPrice?: number;
-  currentValue?: number;
-  profitLoss?: number;
-  profitLossPercent?: number;
-}
-
 export function parseXLSXFile(file: File): Promise<PortfolioRow[]> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -145,7 +133,7 @@ export function groupPortfolioData(data: PortfolioRow[]): GroupedPortfolio[] {
       const price = parseFloat(pos.openPrice) || 0;
       return sum + volume * price;
     }, 0);
-    
+
     group.averageOpenPrice =
       group.totalVolume > 0 ? totalWeightedPrice / group.totalVolume : 0;
     group.totalValue = totalWeightedPrice;
