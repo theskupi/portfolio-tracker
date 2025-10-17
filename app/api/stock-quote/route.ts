@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
     return new Promise<NextResponse>((resolve) => {
       finnhubClient.quote(symbol, (error: any, data: any, response: any) => {
         if (error) {
+          console.error(`[API] Finnhub API error for ${symbol}:`, error);
           resolve(
             NextResponse.json(
               { error: "Failed to fetch stock data", details: error.message },
@@ -32,6 +33,7 @@ export async function GET(request: NextRequest) {
             )
           );
         } else {
+          console.log(`[API] Successfully fetched quote for ${symbol}:`, data);
           resolve(NextResponse.json(data));
         }
       });

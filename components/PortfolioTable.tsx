@@ -16,7 +16,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { GroupedPortfolio } from "@/types/portfolio";
+
+interface GroupedPortfolio {
+  symbol: string;
+  totalVolume: number;
+  positions: Array<{
+    symbol: string;
+    volume: string;
+    openPrice: string;
+  }>;
+  averageOpenPrice: number;
+  totalValue: number;
+  currentPrice?: number;
+  currentValue?: number;
+  profitLoss?: number;
+  profitLossPercent?: number;
+}
 
 interface PortfolioTableProps {
   groupedData: GroupedPortfolio[];
@@ -24,22 +39,12 @@ interface PortfolioTableProps {
   isLoadingQuotes?: boolean;
 }
 
-export function PortfolioTable({
-  groupedData,
-  totalPositions,
-  isLoadingQuotes = false,
-}: PortfolioTableProps) {
+export function PortfolioTable({ groupedData, totalPositions, isLoadingQuotes = false }: PortfolioTableProps) {
   if (groupedData.length === 0) return null;
 
   // Calculate total portfolio value
-  const totalPortfolioValue = groupedData.reduce(
-    (sum, group) => sum + group.totalValue,
-    0
-  );
-  const totalCurrentValue = groupedData.reduce(
-    (sum, group) => sum + (group.currentValue || group.totalValue),
-    0
-  );
+  const totalPortfolioValue = groupedData.reduce((sum, group) => sum + group.totalValue, 0);
+  const totalCurrentValue = groupedData.reduce((sum, group) => sum + (group.currentValue || group.totalValue), 0);
   const totalProfitLoss = totalCurrentValue - totalPortfolioValue;
 
   return (
@@ -48,8 +53,7 @@ export function PortfolioTable({
         <CardTitle>Portfolio Data</CardTitle>
         <CardDescription>
           Showing {groupedData.length} unique{" "}
-          {groupedData.length === 1 ? "symbol" : "symbols"} ({totalPositions}{" "}
-          total positions)
+          {groupedData.length === 1 ? "symbol" : "symbols"} ({totalPositions} total positions)
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -59,6 +63,7 @@ export function PortfolioTable({
               <TableRow>
                 <TableHead>Symbol</TableHead>
                 <TableHead>Volume</TableHead>
+                <TableHead>Avg. Open</TableHead>
                 <TableHead>Current</TableHead>
                 <TableHead className="text-right">Cost</TableHead>
                 <TableHead className="text-right">Value</TableHead>
@@ -67,18 +72,19 @@ export function PortfolioTable({
             </TableHeader>
             <TableBody>
               {groupedData.map((group, index) => {
-                const profitLossColor = group.profitLoss
-                  ? group.profitLoss >= 0
-                    ? "text-green-600"
+                const profitLossColor = group.profitLoss 
+                  ? group.profitLoss >= 0 
+                    ? "text-green-600" 
                     : "text-red-600"
                   : "";
-
+                
                 return (
                   <TableRow key={index}>
                     <TableCell className="font-medium">
                       {group.symbol}
                     </TableCell>
                     <TableCell>{group.totalVolume.toFixed(4)}</TableCell>
+                    <TableCell>${group.averageOpenPrice.toFixed(2)}</TableCell>
                     <TableCell>
                       {isLoadingQuotes ? (
                         <Skeleton className="h-4 w-16" />
@@ -95,20 +101,15 @@ export function PortfolioTable({
                       {isLoadingQuotes && !group.currentValue ? (
                         <Skeleton className="h-4 w-20 ml-auto" />
                       ) : (
-                        `$${(group.currentValue || group.totalValue).toFixed(
-                          2
-                        )}`
+                        `$${(group.currentValue || group.totalValue).toFixed(2)}`
                       )}
                     </TableCell>
-                    <TableCell
-                      className={`text-right font-medium ${profitLossColor}`}
-                    >
+                    <TableCell className={`text-right font-medium ${profitLossColor}`}>
                       {isLoadingQuotes && group.profitLoss === undefined ? (
                         <Skeleton className="h-4 w-24 ml-auto" />
                       ) : group.profitLoss !== undefined ? (
                         <>
-                          {group.profitLoss >= 0 ? "+" : ""}$
-                          {group.profitLoss.toFixed(2)}
+                          {group.profitLoss >= 0 ? "+" : ""}${group.profitLoss.toFixed(2)}
                           <span className="text-xs ml-1">
                             ({group.profitLossPercent?.toFixed(2)}%)
                           </span>
@@ -131,16 +132,10 @@ export function PortfolioTable({
                 <TableCell className="text-right">
                   ${totalCurrentValue.toFixed(2)}
                 </TableCell>
-                <TableCell
-                  className={`text-right ${
-                    totalProfitLoss >= 0 ? "text-green-600" : "text-red-600"
-                  }`}
-                >
+                <TableCell className={`text-right ${totalProfitLoss >= 0 ? "text-green-600" : "text-red-600"}`}>
                   {totalProfitLoss >= 0 ? "+" : ""}${totalProfitLoss.toFixed(2)}
                   <span className="text-xs ml-1">
-                    (
-                    {((totalProfitLoss / totalPortfolioValue) * 100).toFixed(2)}
-                    %)
+                    ({((totalProfitLoss / totalPortfolioValue) * 100).toFixed(2)}%)
                   </span>
                 </TableCell>
               </TableRow>

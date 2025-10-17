@@ -10,6 +10,7 @@ export interface GroupedPortfolio {
   symbol: string;
   totalVolume: number;
   positions: PortfolioRow[];
+  averageOpenPrice: number;
   totalValue: number;
   currentPrice?: number;
   currentValue?: number;
@@ -129,6 +130,7 @@ export function groupPortfolioData(data: PortfolioRow[]): GroupedPortfolio[] {
         symbol: row.symbol,
         totalVolume: parseFloat(row.volume) || 0,
         positions: [row],
+        averageOpenPrice: 0,
         totalValue: 0,
       });
     }
@@ -143,7 +145,9 @@ export function groupPortfolioData(data: PortfolioRow[]): GroupedPortfolio[] {
       const price = parseFloat(pos.openPrice) || 0;
       return sum + volume * price;
     }, 0);
-
+    
+    group.averageOpenPrice =
+      group.totalVolume > 0 ? totalWeightedPrice / group.totalVolume : 0;
     group.totalValue = totalWeightedPrice;
   });
 
