@@ -16,22 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
-interface GroupedPortfolio {
-  symbol: string;
-  totalVolume: number;
-  positions: Array<{
-    symbol: string;
-    volume: string;
-    openPrice: string;
-  }>;
-  averageOpenPrice: number;
-  totalValue: number;
-  currentPrice?: number;
-  currentValue?: number;
-  profitLoss?: number;
-  profitLossPercent?: number;
-}
+import { GroupedPortfolio } from "@/types/portfolio";
 
 interface PortfolioPieChartProps {
   groupedData: GroupedPortfolio[];
@@ -65,12 +50,13 @@ const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
 // Adjust color brightness (factor > 1 = lighter, < 1 = darker)
 const adjustBrightness = (hex: string, factor: number): string => {
   const rgb = hexToRgb(hex);
-  const adjust = (value: number) => Math.min(255, Math.max(0, Math.round(value * factor)));
-  
+  const adjust = (value: number) =>
+    Math.min(255, Math.max(0, Math.round(value * factor)));
+
   const r = adjust(rgb.r).toString(16).padStart(2, "0");
   const g = adjust(rgb.g).toString(16).padStart(2, "0");
   const b = adjust(rgb.b).toString(16).padStart(2, "0");
-  
+
   return `#${r}${g}${b}`;
 };
 
@@ -79,12 +65,12 @@ const generateColor = (index: number): string => {
   if (index < CUSTOM_PALETTE.length) {
     return CUSTOM_PALETTE[index];
   }
-  
+
   // For additional colors, use lighter/darker shades of the palette
   const baseIndex = index % CUSTOM_PALETTE.length;
   const baseColor = CUSTOM_PALETTE[baseIndex];
   const cycle = Math.floor(index / CUSTOM_PALETTE.length);
-  
+
   // Alternate between lighter and darker shades
   const factor = cycle % 2 === 0 ? 1.3 : 0.7; // Lighter or darker
   return adjustBrightness(baseColor, factor);
@@ -94,7 +80,10 @@ export function PortfolioPieChart({ groupedData }: PortfolioPieChartProps) {
   if (groupedData.length === 0) return null;
 
   // Calculate total portfolio value
-  const totalPortfolioValue = groupedData.reduce((sum, item) => sum + item.totalValue, 0);
+  const totalPortfolioValue = groupedData.reduce(
+    (sum, item) => sum + item.totalValue,
+    0
+  );
 
   // Transform data for pie chart (by total value)
   const chartData = groupedData.map((item, index) => ({
@@ -118,11 +107,15 @@ export function PortfolioPieChart({ groupedData }: PortfolioPieChartProps) {
       <CardHeader>
         <CardTitle>Portfolio Distribution</CardTitle>
         <CardDescription>
-          Value distribution across {groupedData.length} symbols • Total: ${totalPortfolioValue.toFixed(2)}
+          Value distribution across {groupedData.length} symbols • Total: $
+          {totalPortfolioValue.toFixed(2)}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[400px]">
+        <ChartContainer
+          config={chartConfig}
+          className="mx-auto aspect-square max-h-[400px]"
+        >
           <PieChart>
             <ChartTooltip
               content={
