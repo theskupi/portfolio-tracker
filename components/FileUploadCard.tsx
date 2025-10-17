@@ -15,6 +15,7 @@ interface FileUploadCardProps {
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onButtonClick: () => void;
+  onClearData?: () => void;
 }
 
 export function FileUploadCard({
@@ -22,6 +23,7 @@ export function FileUploadCard({
   fileInputRef,
   onFileChange,
   onButtonClick,
+  onClearData,
 }: FileUploadCardProps) {
   return (
     <Card>
@@ -56,10 +58,21 @@ export function FileUploadCard({
           </div>
 
           {fileName && (
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
               <p className="text-sm font-medium text-gray-700">
                 Selected file: {fileName}
               </p>
+              {onClearData && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={onClearData}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  Clear Data
+                </Button>
+              )}
             </div>
           )}
         </div>

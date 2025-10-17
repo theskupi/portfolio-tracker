@@ -25,6 +25,7 @@ interface GroupedPortfolio {
     openPrice: string;
   }>;
   averageOpenPrice: number;
+  totalValue: number;
 }
 
 interface PortfolioTableProps {
@@ -34,6 +35,9 @@ interface PortfolioTableProps {
 
 export function PortfolioTable({ groupedData, totalPositions }: PortfolioTableProps) {
   if (groupedData.length === 0) return null;
+
+  // Calculate total portfolio value
+  const totalPortfolioValue = groupedData.reduce((sum, group) => sum + group.totalValue, 0);
 
   return (
     <Card>
@@ -50,9 +54,9 @@ export function PortfolioTable({ groupedData, totalPositions }: PortfolioTablePr
             <TableHeader>
               <TableRow>
                 <TableHead>Symbol</TableHead>
-                <TableHead>Total Volume</TableHead>
-                <TableHead>Avg. Open Price</TableHead>
-                <TableHead className="text-right">Positions</TableHead>
+                <TableHead>Volume</TableHead>
+                <TableHead>Avg. Price</TableHead>
+                <TableHead className="text-right">Total Value</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -63,9 +67,19 @@ export function PortfolioTable({ groupedData, totalPositions }: PortfolioTablePr
                   </TableCell>
                   <TableCell>{group.totalVolume.toFixed(4)}</TableCell>
                   <TableCell>${group.averageOpenPrice.toFixed(2)}</TableCell>
-                  <TableCell className="text-right">{group.positions.length}</TableCell>
+                  <TableCell className="text-right font-medium">
+                    ${group.totalValue.toFixed(2)}
+                  </TableCell>
                 </TableRow>
               ))}
+              <TableRow className="bg-muted/50 font-bold">
+                <TableCell>Total Portfolio</TableCell>
+                <TableCell>-</TableCell>
+                <TableCell>-</TableCell>
+                <TableCell className="text-right">
+                  ${totalPortfolioValue.toFixed(2)}
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </div>

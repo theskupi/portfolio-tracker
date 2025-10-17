@@ -11,6 +11,7 @@ export interface GroupedPortfolio {
   totalVolume: number;
   positions: PortfolioRow[];
   averageOpenPrice: number;
+  totalValue: number;
 }
 
 export function parseXLSXFile(file: File): Promise<PortfolioRow[]> {
@@ -126,21 +127,24 @@ export function groupPortfolioData(data: PortfolioRow[]): GroupedPortfolio[] {
         totalVolume: parseFloat(row.volume) || 0,
         positions: [row],
         averageOpenPrice: 0,
+        totalValue: 0,
       });
     }
 
     return acc;
   }, [] as GroupedPortfolio[]);
 
-  // Calculate average open price for each group
+  // Calculate average open price and total value for each group
   grouped.forEach((group) => {
     const totalWeightedPrice = group.positions.reduce((sum, pos) => {
       const volume = parseFloat(pos.volume) || 0;
       const price = parseFloat(pos.openPrice) || 0;
       return sum + volume * price;
     }, 0);
+    
     group.averageOpenPrice =
       group.totalVolume > 0 ? totalWeightedPrice / group.totalVolume : 0;
+    group.totalValue = totalWeightedPrice;
   });
 
   return grouped;
