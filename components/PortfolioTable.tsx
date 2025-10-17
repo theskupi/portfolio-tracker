@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface GroupedPortfolio {
   symbol: string;
@@ -35,9 +36,10 @@ interface GroupedPortfolio {
 interface PortfolioTableProps {
   groupedData: GroupedPortfolio[];
   totalPositions: number;
+  isLoadingQuotes?: boolean;
 }
 
-export function PortfolioTable({ groupedData, totalPositions }: PortfolioTableProps) {
+export function PortfolioTable({ groupedData, totalPositions, isLoadingQuotes = false }: PortfolioTableProps) {
   if (groupedData.length === 0) return null;
 
   // Calculate total portfolio value
@@ -84,16 +86,28 @@ export function PortfolioTable({ groupedData, totalPositions }: PortfolioTablePr
                     <TableCell>{group.totalVolume.toFixed(4)}</TableCell>
                     <TableCell>${group.averageOpenPrice.toFixed(2)}</TableCell>
                     <TableCell>
-                      {group.currentPrice ? `$${group.currentPrice.toFixed(2)}` : "-"}
+                      {isLoadingQuotes ? (
+                        <Skeleton className="h-4 w-16" />
+                      ) : group.currentPrice ? (
+                        `$${group.currentPrice.toFixed(2)}`
+                      ) : (
+                        "-"
+                      )}
                     </TableCell>
                     <TableCell className="text-right">
                       ${group.totalValue.toFixed(2)}
                     </TableCell>
                     <TableCell className="text-right font-medium">
-                      ${(group.currentValue || group.totalValue).toFixed(2)}
+                      {isLoadingQuotes && !group.currentValue ? (
+                        <Skeleton className="h-4 w-20 ml-auto" />
+                      ) : (
+                        `$${(group.currentValue || group.totalValue).toFixed(2)}`
+                      )}
                     </TableCell>
                     <TableCell className={`text-right font-medium ${profitLossColor}`}>
-                      {group.profitLoss !== undefined ? (
+                      {isLoadingQuotes && group.profitLoss === undefined ? (
+                        <Skeleton className="h-4 w-24 ml-auto" />
+                      ) : group.profitLoss !== undefined ? (
                         <>
                           {group.profitLoss >= 0 ? "+" : ""}${group.profitLoss.toFixed(2)}
                           <span className="text-xs ml-1">

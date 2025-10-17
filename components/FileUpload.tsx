@@ -151,6 +151,7 @@ export const FileUpload = () => {
             <PortfolioTable
               groupedData={groupedData}
               totalPositions={portfolioData.length}
+              isLoadingQuotes={isLoadingQuotes}
             />
           </div>
         ) : (
