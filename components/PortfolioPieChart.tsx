@@ -27,6 +27,10 @@ interface GroupedPortfolio {
   }>;
   averageOpenPrice: number;
   totalValue: number;
+  currentPrice?: number;
+  currentValue?: number;
+  profitLoss?: number;
+  profitLossPercent?: number;
 }
 
 interface PortfolioPieChartProps {

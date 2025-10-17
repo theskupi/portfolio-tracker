@@ -12,6 +12,10 @@ export interface GroupedPortfolio {
   positions: PortfolioRow[];
   averageOpenPrice: number;
   totalValue: number;
+  currentPrice?: number;
+  currentValue?: number;
+  profitLoss?: number;
+  profitLossPercent?: number;
 }
 
 export function parseXLSXFile(file: File): Promise<PortfolioRow[]> {
