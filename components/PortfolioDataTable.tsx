@@ -79,7 +79,7 @@ export function PortfolioDataTable({
                     <TableCell className="font-medium">
                       {group.symbol}
                     </TableCell>
-                    <TableCell>{group.totalVolume.toFixed(4)}</TableCell>
+                    <TableCell>{group.totalVolume}</TableCell>
                     <TableCell>${group.averageOpenPrice.toFixed(2)}</TableCell>
                     <TableCell>
                       {isLoadingQuotes ? (
