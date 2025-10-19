@@ -18,17 +18,17 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { GroupedPortfolio } from "@/types/portfolio";
 
-interface PortfolioTableProps {
+interface PortfolioDataTableProps {
   groupedData: GroupedPortfolio[];
   totalPositions: number;
   isLoadingQuotes?: boolean;
 }
 
-export function PortfolioTable({
+export function PortfolioDataTable({
   groupedData,
   totalPositions,
   isLoadingQuotes = false,
-}: PortfolioTableProps) {
+}: PortfolioDataTableProps) {
   if (groupedData.length === 0) return null;
 
   // Calculate total portfolio value

@@ -1,6 +1,6 @@
 "use client";
 
-import { Pie, PieChart } from "recharts";
+import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import {
   Card,
   CardContent,
@@ -11,28 +11,37 @@ import {
 import {
   ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { GroupedPortfolio } from "@/types/portfolio";
+import { PortfolioAllocationTable } from "./PortfolioAllocationTable";
 
 interface PortfolioPieChartProps {
   groupedData: GroupedPortfolio[];
 }
 
 const CUSTOM_PALETTE = [
-  "#001219",
-  "#005f73",
-  "#0a9396",
-  "#94d2bd",
-  "#e9d8a6",
-  "#ee9b00",
-  "#ca6702",
-  "#bb3e03",
-  "#ae2012",
-  "#9b2226",
+  "#A6CEE3",
+  "#1F78B4",
+  "#B2DF8A",
+  "#33A02C",
+  "#FB9A99",
+  "#E31A1C",
+  "#FDBF6F",
+  "#FF7F00",
+  "#CAB2D6",
+  "#6A3D9A",
+  "#FFFF99",
+  "#B15928",
+  "#8DD3C7",
+  "#FFFFB3",
+  "#BEBADA",
+  "#FB8072",
+  "#80B1D3",
+  "#FDB462",
+  "#B3DE69",
+  "#FCCDE5",
 ];
 
 // Convert hex to RGB
@@ -85,18 +94,28 @@ export function PortfolioPieChart({ groupedData }: PortfolioPieChartProps) {
     0
   );
 
-  // Transform data for pie chart (by total value)
-  const chartData = groupedData.map((item, index) => ({
-    symbol: item.symbol,
-    value: item.totalValue,
-    percentage: ((item.totalValue / totalPortfolioValue) * 100).toFixed(1),
-    fill: generateColor(index),
-  }));
+  // Transform data for bar chart (by total value)
+  const chartData = groupedData
+    .map((item, index) => {
+      const cleanSymbol = item.symbol.replace(".US", "");
+      const currentValue = item.currentValue || item.totalValue;
+      return {
+        symbol: cleanSymbol,
+        originalSymbol: item.symbol,
+        value: item.totalValue,
+        currentValue: currentValue,
+        volume: item.totalVolume,
+        percentage: ((item.totalValue / totalPortfolioValue) * 100).toFixed(1),
+        fill: generateColor(index),
+      };
+    })
+    .sort((a, b) => b.value - a.value);
 
   // Create chart config dynamically
   const chartConfig = groupedData.reduce((config, item, index) => {
-    config[item.symbol] = {
-      label: item.symbol,
+    const cleanSymbol = item.symbol.replace(".US", "");
+    config[cleanSymbol] = {
+      label: cleanSymbol,
       color: generateColor(index),
     };
     return config;
@@ -114,31 +133,54 @@ export function PortfolioPieChart({ groupedData }: PortfolioPieChartProps) {
       <CardContent>
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[400px]"
+          className="h-[400px] w-full"
         >
-          <PieChart>
+          <BarChart
+            data={chartData}
+            layout="vertical"
+            margin={{ left: 20, right: 20, top: 10, bottom: 10 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+            <XAxis type="number" />
+            <YAxis
+              type="category"
+              dataKey="symbol"
+              width={60}
+              tick={{ fontSize: 12 }}
+              interval={0}
+            />
             <ChartTooltip
               content={
                 <ChartTooltipContent
-                  nameKey="symbol"
-                  hideLabel
-                  formatter={(value) => `$${Number(value).toFixed(2)}`}
+                  formatter={(value, name, item) => {
+                    const payload = item.payload;
+                    return (
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="h-3 w-3 rounded-sm"
+                            style={{ backgroundColor: payload.fill }}
+                          />
+                          <span className="font-semibold">{payload.symbol}</span>
+                        </div>
+                        <span className="text-sm">
+                          Value: ${payload.currentValue.toFixed(2)}
+                        </span>
+                        <span className="text-sm">
+                          Percentage: {payload.percentage}%
+                        </span>
+                      </div>
+                    );
+                  }}
                 />
               }
             />
-            <Pie
-              data={chartData}
-              dataKey="value"
-              nameKey="symbol"
-              label={({ symbol, percentage }) => `${symbol}: ${percentage}%`}
-              labelLine={false}
-            />
-            <ChartLegend
-              content={<ChartLegendContent nameKey="symbol" />}
-              className="flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
-            />
-          </PieChart>
+            <Bar dataKey="value" radius={[0, 4, 4, 0]} />
+          </BarChart>
         </ChartContainer>
+
+        {/* Portfolio Allocation Table */}
+        <PortfolioAllocationTable chartData={chartData} />
       </CardContent>
     </Card>
   );
