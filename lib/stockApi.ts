@@ -27,8 +27,6 @@ export async function fetchStockQuote(
     // Remove .US suffix if present (Finnhub uses just the ticker)
     const cleanSymbol = symbol.replace(".US", "");
 
-    console.log(`Fetching quote for ${symbol} (cleaned: ${cleanSymbol})`);
-
     const response = await fetch(
       `/api/stock-quote?symbol=${encodeURIComponent(cleanSymbol)}`
     );
