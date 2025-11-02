@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Navigation } from "./Navigation";
-import { UploadModal } from "./UploadModal";
-import { FileUploadContent } from "./FileUploadContent";
-import { PortfolioDataTable } from "./PortfolioDataTable";
-import { PortfolioPieChart } from "./PortfolioPieChart";
+import { Navigation } from "../components/Navigation";
+import { UploadModal } from "../components/UploadModal";
+import { FileUploadContent } from "../components/FileUploadContent";
+import { PortfolioDataTable } from "../components/PortfolioDataTable";
+import { PortfolioChart } from "../components/PortfolioChart";
 import {
   parseXLSXFile,
   groupPortfolioData,
@@ -13,11 +13,13 @@ import {
 } from "@/lib/xlsxParser";
 import { fetchMultipleStockQuotes } from "@/lib/stockApi";
 import { GroupedPortfolio } from "@/types/portfolio";
+import { PortfolioAllocationTable } from "@/components/PortfolioAllocationTable";
+import { generateColor } from "@/lib/utils";
 
 const STORAGE_KEY = "portfolio-tracker-data";
 const STORAGE_FILENAME_KEY = "portfolio-tracker-filename";
 
-export const FileUpload = () => {
+export const App = () => {
   const [fileName, setFileName] = useState<string>("");
   const [portfolioData, setPortfolioData] = useState<PortfolioRow[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -131,6 +133,27 @@ export const FileUpload = () => {
   const groupedData =
     enrichedData.length > 0 ? enrichedData : groupPortfolioData(portfolioData);
 
+  const totalPortfolioValue = groupedData.reduce(
+    (sum, item) => sum + item.totalValue,
+    0
+  );
+
+  const chartData = groupedData
+    .map((item, index) => {
+      const cleanSymbol = item.symbol.replace(".US", "");
+      const currentValue = item.currentValue || item.totalValue;
+      return {
+        symbol: cleanSymbol,
+        originalSymbol: item.symbol,
+        value: item.totalValue,
+        currentValue: currentValue,
+        volume: item.totalVolume,
+        percentage: ((item.totalValue / totalPortfolioValue) * 100).toFixed(1),
+        fill: generateColor(index),
+      };
+    })
+    .sort((a, b) => b.value - a.value);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <Navigation onUploadClick={() => setIsModalOpen(true)} />
@@ -148,12 +171,19 @@ export const FileUpload = () => {
       <main className="container mx-auto px-4 py-8">
         {groupedData.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <PortfolioPieChart groupedData={groupedData} />
-            <PortfolioDataTable
-              groupedData={groupedData}
-              totalPositions={portfolioData.length}
-              isLoadingQuotes={isLoadingQuotes}
-            />
+            <div>
+              <PortfolioChart
+                groupedData={groupedData}
+                chartData={chartData}
+                totalPortfolioValue={totalPortfolioValue}
+              />
+              <PortfolioDataTable
+                groupedData={groupedData}
+                totalPositions={portfolioData.length}
+                isLoadingQuotes={isLoadingQuotes}
+              />
+            </div>
+            <PortfolioAllocationTable chartData={chartData} />
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-20">

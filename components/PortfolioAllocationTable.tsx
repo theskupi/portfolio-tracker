@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 interface ChartDataItem {
   symbol: string;
@@ -20,7 +21,7 @@ interface ChartDataItem {
 
 type CategoryLabel = "Staple" | "Mature Growth" | "High Growth" | "High Risk";
 
-type SectorLabel = 
+type SectorLabel =
   | "Energy"
   | "Materials"
   | "Industrials"
@@ -64,7 +65,9 @@ export function PortfolioAllocationTable({
   chartData,
 }: PortfolioAllocationTableProps) {
   const [copied, setCopied] = useState(false);
-  const [symbolCategories, setSymbolCategories] = useState<Record<string, CategoryLabel>>(() => {
+  const [symbolCategories, setSymbolCategories] = useState<
+    Record<string, CategoryLabel>
+  >(() => {
     // Try to load from localStorage first
     try {
       const saved = localStorage.getItem(CATEGORIES_STORAGE_KEY);
@@ -74,10 +77,10 @@ export function PortfolioAllocationTable({
     } catch (error) {
       console.error("Error loading categories from localStorage:", error);
     }
-    
+
     // Fallback to predefined categories
     const initial: Record<string, CategoryLabel> = {};
-    chartData.forEach(item => {
+    chartData.forEach((item) => {
       if (SYMBOL_CATEGORIES[item.symbol]) {
         initial[item.symbol] = SYMBOL_CATEGORIES[item.symbol];
       }
@@ -85,7 +88,9 @@ export function PortfolioAllocationTable({
     return initial;
   });
 
-  const [symbolSectors, setSymbolSectors] = useState<Record<string, SectorLabel>>(() => {
+  const [symbolSectors, setSymbolSectors] = useState<
+    Record<string, SectorLabel>
+  >(() => {
     // Try to load from localStorage first
     try {
       const saved = localStorage.getItem(SECTORS_STORAGE_KEY);
@@ -95,10 +100,10 @@ export function PortfolioAllocationTable({
     } catch (error) {
       console.error("Error loading sectors from localStorage:", error);
     }
-    
+
     // Fallback to predefined sectors
     const initial: Record<string, SectorLabel> = {};
-    chartData.forEach(item => {
+    chartData.forEach((item) => {
       if (SYMBOL_SECTORS[item.symbol]) {
         initial[item.symbol] = SYMBOL_SECTORS[item.symbol];
       }
@@ -113,7 +118,7 @@ export function PortfolioAllocationTable({
 
   // Update category for a symbol
   const updateCategory = (symbol: string, category: CategoryLabel) => {
-    setSymbolCategories(prev => {
+    setSymbolCategories((prev) => {
       const updated = {
         ...prev,
         [symbol]: category,
@@ -135,7 +140,7 @@ export function PortfolioAllocationTable({
 
   // Update sector for a symbol
   const updateSector = (symbol: string, sector: SectorLabel) => {
-    setSymbolSectors(prev => {
+    setSymbolSectors((prev) => {
       const updated = {
         ...prev,
         [symbol]: sector,
@@ -173,7 +178,12 @@ export function PortfolioAllocationTable({
   // Function to copy symbol-percentage data to clipboard
   const handleCopyData = async () => {
     const dataText = chartData
-      .map((item) => `${item.symbol}\t${getCategory(item.symbol) || 'Uncategorized'}\t${getSector(item.symbol) || 'Uncategorized'}\t${item.percentage}%`)
+      .map(
+        (item) =>
+          `${item.symbol}\t${getCategory(item.symbol) || "Uncategorized"}\t${
+            getSector(item.symbol) || "Uncategorized"
+          }\t${item.percentage}%`
+      )
       .join("\n");
 
     try {
@@ -186,144 +196,188 @@ export function PortfolioAllocationTable({
   };
 
   return (
-    <div className="mt-6">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold">Portfolio Allocation</h3>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleCopyData}
-          className="gap-2"
-        >
-          {copied ? (
-            <>
-              <Check className="h-4 w-4" />
-              Copied!
-            </>
-          ) : (
-            <>
-              <Copy className="h-4 w-4" />
-              Copy Data
-            </>
-          )}
-        </Button>
-      </div>
-      <div className="border rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-muted">
-            <tr>
-              <th className="text-left py-2 px-3 font-medium">Symbol</th>
-              <th className="text-left py-2 px-3 font-medium">Category</th>
-              <th className="text-left py-2 px-3 font-medium">Sector</th>
-              <th className="text-right py-2 px-3 font-medium">Percentage</th>
-            </tr>
-          </thead>
-          <tbody>
-            {chartData.map((item, index) => {
-              const category = getCategory(item.symbol);
-              const sector = getSector(item.symbol);
-              return (
-                <tr
-                  key={item.symbol}
-                  className={index % 2 === 0 ? "bg-background" : "bg-muted/30"}
-                >
-                  <td className="py-2 px-3 font-medium">{item.symbol}</td>
-                  <td className="py-2 px-3">
-                    <Select
-                      value={category}
-                      onValueChange={(value: string) => updateCategory(item.symbol, value as CategoryLabel)}
-                    >
-                      <SelectTrigger className={`h-7 w-[160px] text-xs ${
-                        category 
-                          ? "border-solid" 
-                          : "border-dashed border-muted-foreground/50"
-                      }`}>
-                        <SelectValue placeholder="+ Add category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Staple">Staple</SelectItem>
-                        <SelectItem value="Mature Growth">Mature Growth</SelectItem>
-                        <SelectItem value="High Growth">High Growth</SelectItem>
-                        <SelectItem value="High Risk">High Risk</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </td>
-                  <td className="py-2 px-3">
-                    <Select
-                      value={sector}
-                      onValueChange={(value: string) => updateSector(item.symbol, value as SectorLabel)}
-                    >
-                      <SelectTrigger className={`h-7 w-[180px] text-xs ${
-                        sector 
-                          ? "border-solid" 
-                          : "border-dashed border-muted-foreground/50"
-                      }`}>
-                        <SelectValue placeholder="+ Add sector" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Energy">Energy</SelectItem>
-                        <SelectItem value="Materials">Materials</SelectItem>
-                        <SelectItem value="Industrials">Industrials</SelectItem>
-                        <SelectItem value="Utilities">Utilities</SelectItem>
-                        <SelectItem value="Healthcare">Healthcare</SelectItem>
-                        <SelectItem value="Financials">Financials</SelectItem>
-                        <SelectItem value="Consumer Discretionary">Consumer Discretionary</SelectItem>
-                        <SelectItem value="Consumer Staples">Consumer Staples</SelectItem>
-                        <SelectItem value="Information Technology">Information Technology</SelectItem>
-                        <SelectItem value="Communication Services">Communication Services</SelectItem>
-                        <SelectItem value="Real Estate">Real Estate</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </td>
-                  <td className="text-right py-2 px-3">{item.percentage}%</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-      
-      {/* Category Breakdown */}
-      <div className="mt-4 p-4 border rounded-lg bg-muted/30">
-        <h4 className="text-sm font-semibold mb-3">Category Breakdown</h4>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {(["Staple", "Mature Growth", "High Growth", "High Risk"] as CategoryLabel[]).map((category) => (
-            <div key={category} className="text-center">
-              <div className="text-xs text-muted-foreground mb-1">{category}</div>
-              <div className="text-lg font-semibold">
-                {(categoryPercentages[category] || 0).toFixed(1)}%
-              </div>
-            </div>
-          ))}
+    <Card>
+      <CardHeader>
+        <CardTitle>Portfolio Allocation</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold">Portfolio Allocation</h3>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleCopyData}
+            className="gap-2"
+          >
+            {copied ? (
+              <>
+                <Check className="h-4 w-4" />
+                Copied!
+              </>
+            ) : (
+              <>
+                <Copy className="h-4 w-4" />
+                Copy Data
+              </>
+            )}
+          </Button>
         </div>
-      </div>
+        <div className="border rounded-lg overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-muted">
+              <tr>
+                <th className="text-left py-2 px-3 font-medium">Symbol</th>
+                <th className="text-left py-2 px-3 font-medium">Category</th>
+                <th className="text-left py-2 px-3 font-medium">Sector</th>
+                <th className="text-right py-2 px-3 font-medium">Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              {chartData.map((item, index) => {
+                const category = getCategory(item.symbol);
+                const sector = getSector(item.symbol);
+                return (
+                  <tr
+                    key={item.symbol}
+                    className={
+                      index % 2 === 0 ? "bg-background" : "bg-muted/30"
+                    }
+                  >
+                    <td className="py-2 px-3 font-medium">{item.symbol}</td>
+                    <td className="py-2 px-3">
+                      <Select
+                        value={category}
+                        onValueChange={(value: string) =>
+                          updateCategory(item.symbol, value as CategoryLabel)
+                        }
+                      >
+                        <SelectTrigger
+                          className={`h-7 w-[160px] text-xs ${
+                            category
+                              ? "border-solid"
+                              : "border-dashed border-muted-foreground/50"
+                          }`}
+                        >
+                          <SelectValue placeholder="+ Add category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Staple">Staple</SelectItem>
+                          <SelectItem value="Mature Growth">
+                            Mature Growth
+                          </SelectItem>
+                          <SelectItem value="High Growth">
+                            High Growth
+                          </SelectItem>
+                          <SelectItem value="High Risk">High Risk</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </td>
+                    <td className="py-2 px-3">
+                      <Select
+                        value={sector}
+                        onValueChange={(value: string) =>
+                          updateSector(item.symbol, value as SectorLabel)
+                        }
+                      >
+                        <SelectTrigger
+                          className={`h-7 w-[180px] text-xs ${
+                            sector
+                              ? "border-solid"
+                              : "border-dashed border-muted-foreground/50"
+                          }`}
+                        >
+                          <SelectValue placeholder="+ Add sector" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Energy">Energy</SelectItem>
+                          <SelectItem value="Materials">Materials</SelectItem>
+                          <SelectItem value="Industrials">
+                            Industrials
+                          </SelectItem>
+                          <SelectItem value="Utilities">Utilities</SelectItem>
+                          <SelectItem value="Healthcare">Healthcare</SelectItem>
+                          <SelectItem value="Financials">Financials</SelectItem>
+                          <SelectItem value="Consumer Discretionary">
+                            Consumer Discretionary
+                          </SelectItem>
+                          <SelectItem value="Consumer Staples">
+                            Consumer Staples
+                          </SelectItem>
+                          <SelectItem value="Information Technology">
+                            Information Technology
+                          </SelectItem>
+                          <SelectItem value="Communication Services">
+                            Communication Services
+                          </SelectItem>
+                          <SelectItem value="Real Estate">
+                            Real Estate
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </td>
+                    <td className="text-right py-2 px-3">{item.percentage}%</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
 
-      {/* Sector Breakdown */}
-      <div className="mt-4 p-4 border rounded-lg bg-muted/30">
-        <h4 className="text-sm font-semibold mb-3">Sector Breakdown</h4>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {([
-            "Energy",
-            "Materials",
-            "Industrials",
-            "Utilities",
-            "Healthcare",
-            "Financials",
-            "Consumer Discretionary",
-            "Consumer Staples",
-            "Information Technology",
-            "Communication Services",
-            "Real Estate"
-          ] as SectorLabel[]).map((sector) => (
-            <div key={sector} className="text-center">
-              <div className="text-xs text-muted-foreground mb-1">{sector}</div>
-              <div className="text-lg font-semibold">
-                {(sectorPercentages[sector] || 0).toFixed(1)}%
+        {/* Category Breakdown */}
+        <div className="mt-4 p-4 border rounded-lg bg-muted/30">
+          <h4 className="text-sm font-semibold mb-3">Category Breakdown</h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {(
+              [
+                "Staple",
+                "Mature Growth",
+                "High Growth",
+                "High Risk",
+              ] as CategoryLabel[]
+            ).map((category) => (
+              <div key={category} className="text-center">
+                <div className="text-xs text-muted-foreground mb-1">
+                  {category}
+                </div>
+                <div className="text-lg font-semibold">
+                  {(categoryPercentages[category] || 0).toFixed(1)}%
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-    </div>
+
+        {/* Sector Breakdown */}
+        <div className="mt-4 p-4 border rounded-lg bg-muted/30">
+          <h4 className="text-sm font-semibold mb-3">Sector Breakdown</h4>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {(
+              [
+                "Energy",
+                "Materials",
+                "Industrials",
+                "Utilities",
+                "Healthcare",
+                "Financials",
+                "Consumer Discretionary",
+                "Consumer Staples",
+                "Information Technology",
+                "Communication Services",
+                "Real Estate",
+              ] as SectorLabel[]
+            ).map((sector) => (
+              <div key={sector} className="text-center">
+                <div className="text-xs text-muted-foreground mb-1">
+                  {sector}
+                </div>
+                <div className="text-lg font-semibold">
+                  {(sectorPercentages[sector] || 0).toFixed(1)}%
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

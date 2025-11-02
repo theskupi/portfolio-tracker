@@ -13,3 +13,13 @@ export interface GroupedPortfolio {
   profitLoss?: number;
   profitLossPercent?: number;
 }
+
+export interface ChartDataItem {
+  symbol: string;
+  originalSymbol: string;
+  value: number;
+  currentValue: number;
+  volume: number;
+  percentage: string;
+  fill: string;
+}

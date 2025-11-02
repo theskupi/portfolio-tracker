@@ -1,5 +1,5 @@
-import { FileUpload } from "@/components/FileUpload";
+import { App } from "@/app/App";
 
 export default function Home() {
-  return <FileUpload />;
+  return <App />;
 }
