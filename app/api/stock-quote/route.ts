@@ -33,7 +33,6 @@ export async function GET(request: NextRequest) {
             )
           );
         } else {
-          console.log(`[API] Successfully fetched quote for ${symbol}:`, data);
           resolve(NextResponse.json(data));
         }
       });

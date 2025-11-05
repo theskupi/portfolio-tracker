@@ -2,6 +2,7 @@
 
 import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface NavigationProps {
   onUploadClick: () => void;
@@ -16,10 +17,13 @@ export function Navigation({ onUploadClick }: NavigationProps) {
             <h1 className="text-2xl font-bold">Portfolio Tracker</h1>
           </div>
           
-          <Button onClick={onUploadClick} className="gap-2">
-            <Upload className="h-4 w-4" />
-            Upload File
-          </Button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button onClick={onUploadClick} className="gap-2">
+              <Upload className="h-4 w-4" />
+              Upload File
+            </Button>
+          </div>
         </div>
       </div>
     </nav>
