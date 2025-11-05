@@ -43,7 +43,7 @@ export function PortfolioDataTable({
   const totalProfitLoss = totalCurrentValue - totalPortfolioValue;
 
   return (
-    <Card>
+    <Card className="lg:col-span-3">
       <CardHeader>
         <CardTitle>Portfolio Data</CardTitle>
         <CardDescription>

@@ -1,3 +1,13 @@
+"use client";
+
+import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+
 export type CategoryLabel =
   | "Staple"
   | "Mature Growth"
@@ -8,28 +18,50 @@ interface CategoryBreakdownProps {
   categoryPercentages: Record<CategoryLabel, number>;
 }
 
+const chartConfig = {
+  percentage: {
+    label: "Percentage",
+    color: "#f72585",
+  },
+} satisfies ChartConfig;
+
 export function CategoryBreakdown({
   categoryPercentages,
 }: CategoryBreakdownProps) {
+  // Transform data for radar chart
+  const chartData = [
+    {
+      category: "Staple",
+      percentage: categoryPercentages["Staple"] || 0,
+    },
+    {
+      category: "Mature Growth",
+      percentage: categoryPercentages["Mature Growth"] || 0,
+    },
+    {
+      category: "High Growth",
+      percentage: categoryPercentages["High Growth"] || 0,
+    },
+    {
+      category: "High Risk",
+      percentage: categoryPercentages["High Risk"] || 0,
+    },
+  ];
+
   return (
-    <div className="mt-4 p-4 border rounded-lg bg-muted/30">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {(
-          [
-            "Staple",
-            "Mature Growth",
-            "High Growth",
-            "High Risk",
-          ] as CategoryLabel[]
-        ).map((category) => (
-          <div key={category} className="text-center">
-            <div className="text-xs text-muted-foreground mb-1">{category}</div>
-            <div className="text-lg font-semibold">
-              {(categoryPercentages[category] || 0).toFixed(1)}%
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    <ChartContainer config={chartConfig} className="mx-auto">
+      <RadarChart data={chartData}>
+        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+        <PolarAngleAxis dataKey="category" />
+        <PolarGrid />
+        <Radar
+          dataKey="percentage"
+          fill="var(--color-percentage)"
+          fillOpacity={0.6}
+          stroke="var(--color-percentage)"
+          strokeWidth={2}
+        />
+      </RadarChart>
+    </ChartContainer>
   );
 }

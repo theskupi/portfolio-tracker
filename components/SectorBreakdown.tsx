@@ -42,7 +42,7 @@ function isWithinIdealRange(actual: number, idealRange: string): boolean {
 export function SectorBreakdown({ sectorPercentages }: SectorBreakdownProps) {
   return (
     <div className="mt-4 p-4 border rounded-lg bg-muted/30">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {(
           [
             "Energy",

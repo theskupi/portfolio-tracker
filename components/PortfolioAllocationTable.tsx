@@ -207,8 +207,8 @@ export function PortfolioAllocationTable({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <Card className="lg:col-span-2">
         <CardHeader>
           <CardTitle>Portfolio Allocation</CardTitle>
         </CardHeader>
@@ -363,12 +363,12 @@ export function PortfolioAllocationTable({
           </div>
         </CardContent>
       </Card>
-      <div>
+      <div className="lg:col-span-1">
         <Card>
           <CardHeader>
             <CardTitle>Category Breakdown</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-0">
             <CategoryBreakdown categoryPercentages={categoryPercentages} />
           </CardContent>
         </Card>

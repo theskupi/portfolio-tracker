@@ -252,7 +252,7 @@ export const App = () => {
             </div>
 
             <TabsContent value="overview">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                 <PortfolioChart
                   groupedData={groupedData}
                   chartData={chartData}

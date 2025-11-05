@@ -24,12 +24,23 @@ const createGradient = (baseColor: string, index: number) => {
   const adjustBrightness = (hex: string, factor: number): string => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     if (!result) return hex;
-    
-    const r = Math.min(255, Math.max(0, Math.round(parseInt(result[1], 16) * factor)));
-    const g = Math.min(255, Math.max(0, Math.round(parseInt(result[2], 16) * factor)));
-    const b = Math.min(255, Math.max(0, Math.round(parseInt(result[3], 16) * factor)));
-    
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+
+    const r = Math.min(
+      255,
+      Math.max(0, Math.round(parseInt(result[1], 16) * factor))
+    );
+    const g = Math.min(
+      255,
+      Math.max(0, Math.round(parseInt(result[2], 16) * factor))
+    );
+    const b = Math.min(
+      255,
+      Math.max(0, Math.round(parseInt(result[3], 16) * factor))
+    );
+
+    return `#${r.toString(16).padStart(2, "0")}${g
+      .toString(16)
+      .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
   };
 
   return {
@@ -63,7 +74,7 @@ export function PortfolioChart({
   }, {} as ChartConfig);
 
   return (
-    <Card className="mb-4">
+    <Card className="mb-4 lg:col-span-2">
       <CardHeader>
         <CardTitle>Portfolio Distribution</CardTitle>
         <CardDescription>
@@ -72,7 +83,7 @@ export function PortfolioChart({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[400px] w-full">
+        <ChartContainer config={chartConfig} className="h-[500px] w-full">
           <BarChart
             data={chartData}
             layout="vertical"
@@ -118,7 +129,9 @@ export function PortfolioChart({
                         <div className="flex items-center gap-2">
                           <div
                             className="h-3 w-3 rounded-sm"
-                            style={{ background: `linear-gradient(90deg, ${gradient.lighter}, ${gradient.base}, ${gradient.darker})` }}
+                            style={{
+                              background: `linear-gradient(90deg, ${gradient.lighter}, ${gradient.base}, ${gradient.darker})`,
+                            }}
                           />
                           <span className="font-semibold">
                             {payload.symbol}
@@ -136,14 +149,11 @@ export function PortfolioChart({
                 />
               }
             />
-            <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+            <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={32}>
               {chartData.map((entry, index) => {
                 const gradient = createGradient(entry.fill, index);
                 return (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={`url(#${gradient.id})`}
-                  />
+                  <Cell key={`cell-${index}`} fill={`url(#${gradient.id})`} />
                 );
               })}
             </Bar>
