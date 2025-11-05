@@ -24,17 +24,14 @@ export async function fetchStockQuote(
   symbol: string
 ): Promise<StockData | null> {
   try {
-    // Remove .US suffix if present (Finnhub uses just the ticker)
-    const cleanSymbol = symbol.replace(".US", "");
-
     const response = await fetch(
-      `/api/stock-quote?symbol=${encodeURIComponent(cleanSymbol)}`
+      `/api/stock-quote?symbol=${encodeURIComponent(symbol)}`
     );
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error(
-        `Failed to fetch quote for ${symbol} (${cleanSymbol}):`,
+        `Failed to fetch quote for ${symbol}:`,
         response.status,
         errorText
       );

@@ -140,10 +140,9 @@ export const App = () => {
 
   const chartData = groupedData
     .map((item, index) => {
-      const cleanSymbol = item.symbol.replace(".US", "");
       const currentValue = item.currentValue || item.totalValue;
       return {
-        symbol: cleanSymbol,
+        symbol: item.symbol,
         originalSymbol: item.symbol,
         value: item.totalValue,
         currentValue: currentValue,

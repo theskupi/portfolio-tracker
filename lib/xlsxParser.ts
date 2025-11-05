@@ -87,7 +87,7 @@ export function parseXLSXFile(file: File): Promise<PortfolioRow[]> {
               row[symbolIndex] !== "Total"
           )
           .map((row: any[]) => ({
-            symbol: row[symbolIndex]?.toString() || "",
+            symbol: (row[symbolIndex]?.toString() || "").replace(".US", ""),
             volume: row[volumeIndex]?.toString() || "",
             openPrice: row[openPriceIndex]?.toString() || "",
           }));
