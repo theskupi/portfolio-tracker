@@ -21,7 +21,6 @@ interface ChartDataItem {
   percentage: string;
 }
 
-
 // Define symbol categories - customize these mappings as needed
 const SYMBOL_CATEGORIES: Record<string, CategoryLabel> = {
   // Add your symbol mappings here, for example:
@@ -184,136 +183,161 @@ export function PortfolioAllocationTable({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Portfolio Allocation</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold">Portfolio Allocation</h3>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleCopyData}
-            className="gap-2"
-          >
-            {copied ? (
-              <>
-                <Check className="h-4 w-4" />
-                Copied!
-              </>
-            ) : (
-              <>
-                <Copy className="h-4 w-4" />
-                Copy Data
-              </>
-            )}
-          </Button>
-        </div>
-        <div className="border rounded-lg overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-muted">
-              <tr>
-                <th className="text-left py-2 px-3 font-medium">Symbol</th>
-                <th className="text-left py-2 px-3 font-medium">Category</th>
-                <th className="text-left py-2 px-3 font-medium">Sector</th>
-                <th className="text-right py-2 px-3 font-medium">Percentage</th>
-              </tr>
-            </thead>
-            <tbody>
-              {chartData.map((item, index) => {
-                const category = getCategory(item.symbol);
-                const sector = getSector(item.symbol);
-                return (
-                  <tr
-                    key={item.symbol}
-                    className={
-                      index % 2 === 0 ? "bg-background" : "bg-muted/30"
-                    }
-                  >
-                    <td className="py-2 px-3 font-medium">{item.symbol}</td>
-                    <td className="py-2 px-3">
-                      <Select
-                        value={category}
-                        onValueChange={(value: string) =>
-                          updateCategory(item.symbol, value as CategoryLabel)
-                        }
-                      >
-                        <SelectTrigger
-                          className={`h-7 w-[160px] text-xs ${
-                            category
-                              ? "border-solid"
-                              : "border-dashed border-muted-foreground/50"
-                          }`}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Portfolio Allocation</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between mb-3">
+            <p>Set the category and sector for each symbol</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCopyData}
+              className="gap-2"
+            >
+              {copied ? (
+                <>
+                  <Check className="h-4 w-4" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Copy className="h-4 w-4" />
+                  Copy Data
+                </>
+              )}
+            </Button>
+          </div>
+          <div className="border rounded-lg overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-muted">
+                <tr>
+                  <th className="text-left py-2 px-3 font-medium">Symbol</th>
+                  <th className="text-left py-2 px-3 font-medium">Category</th>
+                  <th className="text-left py-2 px-3 font-medium">Sector</th>
+                  <th className="text-right py-2 px-3 font-medium">
+                    Percentage
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {chartData.map((item, index) => {
+                  const category = getCategory(item.symbol);
+                  const sector = getSector(item.symbol);
+                  return (
+                    <tr
+                      key={item.symbol}
+                      className={
+                        index % 2 === 0 ? "bg-background" : "bg-muted/30"
+                      }
+                    >
+                      <td className="py-2 px-3 font-medium">{item.symbol}</td>
+                      <td className="py-2 px-3">
+                        <Select
+                          value={category}
+                          onValueChange={(value: string) =>
+                            updateCategory(item.symbol, value as CategoryLabel)
+                          }
                         >
-                          <SelectValue placeholder="+ Add category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Staple">Staple</SelectItem>
-                          <SelectItem value="Mature Growth">
-                            Mature Growth
-                          </SelectItem>
-                          <SelectItem value="High Growth">
-                            High Growth
-                          </SelectItem>
-                          <SelectItem value="High Risk">High Risk</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </td>
-                    <td className="py-2 px-3">
-                      <Select
-                        value={sector}
-                        onValueChange={(value: string) =>
-                          updateSector(item.symbol, value as SectorLabel)
-                        }
-                      >
-                        <SelectTrigger
-                          className={`h-7 w-[180px] text-xs ${
-                            sector
-                              ? "border-solid"
-                              : "border-dashed border-muted-foreground/50"
-                          }`}
+                          <SelectTrigger
+                            className={`h-7 w-[160px] text-xs ${
+                              category
+                                ? "border-solid"
+                                : "border-dashed border-muted-foreground/50"
+                            }`}
+                          >
+                            <SelectValue placeholder="+ Add category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Staple">Staple</SelectItem>
+                            <SelectItem value="Mature Growth">
+                              Mature Growth
+                            </SelectItem>
+                            <SelectItem value="High Growth">
+                              High Growth
+                            </SelectItem>
+                            <SelectItem value="High Risk">High Risk</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </td>
+                      <td className="py-2 px-3">
+                        <Select
+                          value={sector}
+                          onValueChange={(value: string) =>
+                            updateSector(item.symbol, value as SectorLabel)
+                          }
                         >
-                          <SelectValue placeholder="+ Add sector" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Energy">Energy</SelectItem>
-                          <SelectItem value="Materials">Materials</SelectItem>
-                          <SelectItem value="Industrials">
-                            Industrials
-                          </SelectItem>
-                          <SelectItem value="Utilities">Utilities</SelectItem>
-                          <SelectItem value="Healthcare">Healthcare</SelectItem>
-                          <SelectItem value="Financials">Financials</SelectItem>
-                          <SelectItem value="Consumer Discretionary">
-                            Consumer Discretionary
-                          </SelectItem>
-                          <SelectItem value="Consumer Staples">
-                            Consumer Staples
-                          </SelectItem>
-                          <SelectItem value="Information Technology">
-                            Information Technology
-                          </SelectItem>
-                          <SelectItem value="Communication Services">
-                            Communication Services
-                          </SelectItem>
-                          <SelectItem value="Real Estate">
-                            Real Estate
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </td>
-                    <td className="text-right py-2 px-3">{item.percentage}%</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        <CategoryBreakdown categoryPercentages={categoryPercentages} />
-        <SectorBreakdown sectorPercentages={sectorPercentages} />
-      </CardContent>
-    </Card>
+                          <SelectTrigger
+                            className={`h-7 w-[180px] text-xs ${
+                              sector
+                                ? "border-solid"
+                                : "border-dashed border-muted-foreground/50"
+                            }`}
+                          >
+                            <SelectValue placeholder="+ Add sector" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Energy">Energy</SelectItem>
+                            <SelectItem value="Materials">Materials</SelectItem>
+                            <SelectItem value="Industrials">
+                              Industrials
+                            </SelectItem>
+                            <SelectItem value="Utilities">Utilities</SelectItem>
+                            <SelectItem value="Healthcare">
+                              Healthcare
+                            </SelectItem>
+                            <SelectItem value="Financials">
+                              Financials
+                            </SelectItem>
+                            <SelectItem value="Consumer Discretionary">
+                              Consumer Discretionary
+                            </SelectItem>
+                            <SelectItem value="Consumer Staples">
+                              Consumer Staples
+                            </SelectItem>
+                            <SelectItem value="Information Technology">
+                              Information Technology
+                            </SelectItem>
+                            <SelectItem value="Communication Services">
+                              Communication Services
+                            </SelectItem>
+                            <SelectItem value="Real Estate">
+                              Real Estate
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </td>
+                      <td className="text-right py-2 px-3">
+                        {item.percentage}%
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+      <div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Category Breakdown</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CategoryBreakdown categoryPercentages={categoryPercentages} />
+          </CardContent>
+        </Card>
+        <Card className="mt-4">
+          <CardHeader>
+            <CardTitle>Sector Breakdown</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <SectorBreakdown sectorPercentages={sectorPercentages} />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }

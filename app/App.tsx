@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Navigation } from "../components/Navigation";
 import { UploadModal } from "../components/UploadModal";
 import { FileUploadContent } from "../components/FileUploadContent";
@@ -16,6 +16,12 @@ import { fetchMultipleBrandInfo } from "@/lib/brandfetchApi";
 import { GroupedPortfolio } from "@/types/portfolio";
 import { PortfolioAllocationTable } from "@/components/PortfolioAllocationTable";
 import { generateColor, getBrandColor } from "@/lib/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  CategoryBreakdown,
+  CategoryLabel,
+} from "@/components/CategoryBreakdown";
+import { SectorBreakdown, SectorLabel } from "@/components/SectorBreakdown";
 
 const STORAGE_KEY = "portfolio-tracker-data";
 const STORAGE_FILENAME_KEY = "portfolio-tracker-filename";
@@ -27,7 +33,28 @@ export const App = () => {
   const [isLoadingQuotes, setIsLoadingQuotes] = useState(false);
   const [isLoadingBrands, setIsLoadingBrands] = useState(false);
   const [enrichedData, setEnrichedData] = useState<GroupedPortfolio[]>([]);
+  const [categoryPercentages, setCategoryPercentages] = useState<
+    Record<CategoryLabel, number>
+  >({} as Record<CategoryLabel, number>);
+  const [sectorPercentages, setSectorPercentages] = useState<
+    Record<SectorLabel, number>
+  >({} as Record<SectorLabel, number>);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Memoize callbacks to prevent infinite re-renders
+  const handleCategoryPercentagesChange = useCallback(
+    (percentages: Record<CategoryLabel, number>) => {
+      setCategoryPercentages(percentages);
+    },
+    []
+  );
+
+  const handleSectorPercentagesChange = useCallback(
+    (percentages: Record<SectorLabel, number>) => {
+      setSectorPercentages(percentages);
+    },
+    []
+  );
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -179,7 +206,11 @@ export const App = () => {
     .map((item, index) => {
       const currentValue = item.currentValue || item.totalValue;
       // Use brand color if available, otherwise fall back to palette
-      const brandColor = getBrandColor(item.brandInfo?.colors, index, item.symbol);
+      const brandColor = getBrandColor(
+        item.brandInfo?.colors,
+        index,
+        item.symbol
+      );
 
       return {
         symbol: item.symbol,
@@ -209,21 +240,57 @@ export const App = () => {
 
       <main className="container mx-auto px-4 py-8">
         {groupedData.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <PortfolioChart
-                groupedData={groupedData}
-                chartData={chartData}
-                totalPortfolioValue={totalPortfolioValue}
-              />
-              <PortfolioDataTable
-                groupedData={groupedData}
-                totalPositions={portfolioData.length}
-                isLoadingQuotes={isLoadingQuotes || isLoadingBrands}
-              />
+          <Tabs defaultValue="overview" className="w-full">
+            <div className="flex justify-center mb-6">
+              <TabsList>
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="allocations">Allocations</TabsTrigger>
+                <TabsTrigger value="dividends">Dividends</TabsTrigger>
+                <TabsTrigger value="earnings">Earnings</TabsTrigger>
+              </TabsList>
             </div>
-            <PortfolioAllocationTable chartData={chartData} />
-          </div>
+
+            <TabsContent value="overview">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <PortfolioChart
+                  groupedData={groupedData}
+                  chartData={chartData}
+                  totalPortfolioValue={totalPortfolioValue}
+                />
+                <PortfolioDataTable
+                  groupedData={groupedData}
+                  totalPositions={portfolioData.length}
+                  isLoadingQuotes={isLoadingQuotes || isLoadingBrands}
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="allocations">
+              <PortfolioAllocationTable chartData={chartData} />
+            </TabsContent>
+
+            <TabsContent value="dividends">
+              <div className="flex flex-col items-center justify-center py-20">
+                <p className="text-gray-500 text-lg mb-4">
+                  Dividends tracking coming soon
+                </p>
+                <p className="text-gray-400 text-sm">
+                  This feature is under development
+                </p>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="earnings">
+              <div className="flex flex-col items-center justify-center py-20">
+                <p className="text-gray-500 text-lg mb-4">
+                  Earnings tracking coming soon
+                </p>
+                <p className="text-gray-400 text-sm">
+                  This feature is under development
+                </p>
+              </div>
+            </TabsContent>
+          </Tabs>
         ) : (
           <div className="flex flex-col items-center justify-center py-20">
             <p className="text-gray-500 text-lg mb-4">
