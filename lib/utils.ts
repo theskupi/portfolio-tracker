@@ -28,6 +28,9 @@ const CUSTOM_PALETTE = [
   "#FCCDE5",
 ];
 
+// Alternative palette:
+// const CUSTOM_PALETTE = ["#f72585", "#b5179e", "#7209b7", "#560bad", "#480ca8", "#3a0ca3", "#3f37c9", "#4361ee", "#4895ef", "#4cc9f0"];
+
 // Convert hex to RGB
 const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -55,16 +58,17 @@ const adjustBrightness = (hex: string, factor: number): string => {
 
 // Generate color from palette with lighter/darker shades if needed
 export const generateColor = (index: number): string => {
-  if (index < CUSTOM_PALETTE.length) {
-    return CUSTOM_PALETTE[index];
-  }
-
-  // For additional colors, use lighter/darker shades of the palette
   const baseIndex = index % CUSTOM_PALETTE.length;
-  const baseColor = CUSTOM_PALETTE[baseIndex];
-  const cycle = Math.floor(index / CUSTOM_PALETTE.length);
+  return CUSTOM_PALETTE[baseIndex];
+};
 
-  // Alternate between lighter and darker shades
-  const factor = cycle % 2 === 0 ? 1.3 : 0.7; // Lighter or darker
-  return adjustBrightness(baseColor, factor);
+// Get gradient colors for a given index (lighter, base, darker)
+export const getGradientColors = (index: number) => {
+  const baseColor = generateColor(index);
+  return {
+    id: `gradient-${index}`,
+    lighter: adjustBrightness(baseColor, 1.3),
+    base: baseColor,
+    darker: adjustBrightness(baseColor, 0.7),
+  };
 };
