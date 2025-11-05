@@ -24,4 +24,5 @@ export interface ChartDataItem {
   volume: number;
   percentage: string;
   fill: string;
+  brandInfo?: BrandInfo;
 }

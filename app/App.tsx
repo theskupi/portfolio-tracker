@@ -220,6 +220,7 @@ export const App = () => {
         volume: item.totalVolume,
         percentage: ((item.totalValue / totalPortfolioValue) * 100).toFixed(1),
         fill: brandColor,
+        brandInfo: item.brandInfo,
       };
     })
     .sort((a, b) => b.value - a.value);

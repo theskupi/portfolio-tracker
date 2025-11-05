@@ -14,11 +14,13 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { CategoryBreakdown, CategoryLabel } from "./CategoryBreakdown";
 import { SectorBreakdown, SectorLabel } from "./SectorBreakdown";
+import { BrandInfo } from "@/lib/brandfetchApi";
 
 interface ChartDataItem {
   symbol: string;
   originalSymbol: string;
   percentage: string;
+  brandInfo?: BrandInfo;
 }
 
 // Define symbol categories - customize these mappings as needed
@@ -47,6 +49,28 @@ interface PortfolioAllocationTableProps {
 
 const CATEGORIES_STORAGE_KEY = "portfolio-tracker-categories";
 const SECTORS_STORAGE_KEY = "portfolio-tracker-sectors";
+
+// Helper function to get the best logo from BrandInfo
+const getBestLogo = (brandInfo?: BrandInfo): string | null => {
+  if (!brandInfo || !brandInfo.logos || brandInfo.logos.length === 0) {
+    return null;
+  }
+
+  // Prioritize icon type logos
+  const iconLogo = brandInfo.logos.find((logo) => logo.type === "icon");
+  const logoToUse = iconLogo || brandInfo.logos[0];
+
+  if (!logoToUse.formats || logoToUse.formats.length === 0) {
+    return null;
+  }
+
+  // Prefer SVG format, then PNG
+  const svgFormat = logoToUse.formats.find((f) => f.format === "svg");
+  const pngFormat = logoToUse.formats.find((f) => f.format === "png");
+  const format = svgFormat || pngFormat || logoToUse.formats[0];
+
+  return format.src;
+};
 
 export function PortfolioAllocationTable({
   chartData,
@@ -214,7 +238,7 @@ export function PortfolioAllocationTable({
             <table className="w-full text-sm">
               <thead className="bg-muted">
                 <tr>
-                  <th className="text-left py-2 px-3 font-medium">Symbol</th>
+                  <th className="text-left py-2 px-3 font-medium">Company</th>
                   <th className="text-left py-2 px-3 font-medium">Category</th>
                   <th className="text-left py-2 px-3 font-medium">Sector</th>
                   <th className="text-right py-2 px-3 font-medium">
@@ -226,6 +250,7 @@ export function PortfolioAllocationTable({
                 {chartData.map((item, index) => {
                   const category = getCategory(item.symbol);
                   const sector = getSector(item.symbol);
+                  const logoSrc = getBestLogo(item.brandInfo);
                   return (
                     <tr
                       key={item.symbol}
@@ -233,7 +258,25 @@ export function PortfolioAllocationTable({
                         index % 2 === 0 ? "bg-background" : "bg-muted/30"
                       }
                     >
-                      <td className="py-2 px-3 font-medium">{item.symbol}</td>
+                      <td className="py-2 px-3">
+                        <div className="flex items-center gap-2">
+                          {logoSrc ? (
+                            <img
+                              src={logoSrc}
+                              alt={`${item.symbol} logo`}
+                              className="w-6 h-6 object-contain"
+                              onError={(e) => {
+                                e.currentTarget.style.display = "none";
+                              }}
+                            />
+                          ) : (
+                            <div className="w-6 h-6 rounded bg-muted flex items-center justify-center text-xs font-semibold text-muted-foreground">
+                              {item.symbol.charAt(0)}
+                            </div>
+                          )}
+                          <span className="font-medium">{item.symbol}</span>
+                        </div>
+                      </td>
                       <td className="py-2 px-3">
                         <Select
                           value={category}
