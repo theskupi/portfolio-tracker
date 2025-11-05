@@ -12,6 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { CategoryBreakdown, CategoryLabel } from "./CategoryBreakdown";
+import { SectorBreakdown, SectorLabel } from "./SectorBreakdown";
 
 interface ChartDataItem {
   symbol: string;
@@ -19,20 +21,6 @@ interface ChartDataItem {
   percentage: string;
 }
 
-type CategoryLabel = "Staple" | "Mature Growth" | "High Growth" | "High Risk";
-
-type SectorLabel =
-  | "Energy"
-  | "Materials"
-  | "Industrials"
-  | "Utilities"
-  | "Healthcare"
-  | "Financials"
-  | "Consumer Discretionary"
-  | "Consumer Staples"
-  | "Information Technology"
-  | "Communication Services"
-  | "Real Estate";
 
 // Define symbol categories - customize these mappings as needed
 const SYMBOL_CATEGORIES: Record<string, CategoryLabel> = {
@@ -323,60 +311,8 @@ export function PortfolioAllocationTable({
           </table>
         </div>
 
-        {/* Category Breakdown */}
-        <div className="mt-4 p-4 border rounded-lg bg-muted/30">
-          <h4 className="text-sm font-semibold mb-3">Category Breakdown</h4>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {(
-              [
-                "Staple",
-                "Mature Growth",
-                "High Growth",
-                "High Risk",
-              ] as CategoryLabel[]
-            ).map((category) => (
-              <div key={category} className="text-center">
-                <div className="text-xs text-muted-foreground mb-1">
-                  {category}
-                </div>
-                <div className="text-lg font-semibold">
-                  {(categoryPercentages[category] || 0).toFixed(1)}%
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Sector Breakdown */}
-        <div className="mt-4 p-4 border rounded-lg bg-muted/30">
-          <h4 className="text-sm font-semibold mb-3">Sector Breakdown</h4>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {(
-              [
-                "Energy",
-                "Materials",
-                "Industrials",
-                "Utilities",
-                "Healthcare",
-                "Financials",
-                "Consumer Discretionary",
-                "Consumer Staples",
-                "Information Technology",
-                "Communication Services",
-                "Real Estate",
-              ] as SectorLabel[]
-            ).map((sector) => (
-              <div key={sector} className="text-center">
-                <div className="text-xs text-muted-foreground mb-1">
-                  {sector}
-                </div>
-                <div className="text-lg font-semibold">
-                  {(sectorPercentages[sector] || 0).toFixed(1)}%
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <CategoryBreakdown categoryPercentages={categoryPercentages} />
+        <SectorBreakdown sectorPercentages={sectorPercentages} />
       </CardContent>
     </Card>
   );
