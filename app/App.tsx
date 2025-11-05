@@ -12,9 +12,10 @@ import {
   type PortfolioRow,
 } from "@/lib/xlsxParser";
 import { fetchMultipleStockQuotes } from "@/lib/stockApi";
+import { fetchMultipleBrandInfo } from "@/lib/brandfetchApi";
 import { GroupedPortfolio } from "@/types/portfolio";
 import { PortfolioAllocationTable } from "@/components/PortfolioAllocationTable";
-import { generateColor } from "@/lib/utils";
+import { generateColor, getBrandColor } from "@/lib/utils";
 
 const STORAGE_KEY = "portfolio-tracker-data";
 const STORAGE_FILENAME_KEY = "portfolio-tracker-filename";
@@ -24,6 +25,7 @@ export const App = () => {
   const [portfolioData, setPortfolioData] = useState<PortfolioRow[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoadingQuotes, setIsLoadingQuotes] = useState(false);
+  const [isLoadingBrands, setIsLoadingBrands] = useState(false);
   const [enrichedData, setEnrichedData] = useState<GroupedPortfolio[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -79,6 +81,35 @@ export const App = () => {
     localStorage.removeItem(STORAGE_FILENAME_KEY);
   };
 
+  // Fetch brand information for all symbols
+  const fetchBrandData = async (grouped: GroupedPortfolio[]) => {
+    setIsLoadingBrands(true);
+    const symbols = grouped.map((item) => item.symbol);
+
+    try {
+      const brandInfo = await fetchMultipleBrandInfo(symbols);
+
+      // Enrich grouped data with brand info
+      const enriched = grouped.map((item) => {
+        const brand = brandInfo.get(item.symbol);
+        if (brand) {
+          return {
+            ...item,
+            brandInfo: brand,
+          };
+        }
+        return item;
+      });
+
+      return enriched;
+    } catch (error) {
+      console.error("Error fetching brand info:", error);
+      return grouped;
+    } finally {
+      setIsLoadingBrands(false);
+    }
+  };
+
   // Fetch real-time stock quotes and enrich data
   const fetchAndEnrichData = async (data: PortfolioRow[]) => {
     if (data.length === 0) {
@@ -93,10 +124,16 @@ export const App = () => {
     const symbols = grouped.map((item) => item.symbol);
 
     try {
-      const stockQuotes = await fetchMultipleStockQuotes(symbols);
+      // Fetch stock quotes and brand info in parallel
+      const [stockQuotes, groupedWithBrands] = await Promise.all([
+        fetchMultipleStockQuotes(symbols),
+        fetchBrandData(grouped),
+      ]);
+
+      console.log("Stock quotes", stockQuotes);
 
       // Enrich grouped data with current prices
-      const enriched = grouped.map((item) => {
+      const enriched = groupedWithBrands.map((item) => {
         const quote = stockQuotes.get(item.symbol);
 
         if (quote) {
@@ -141,6 +178,9 @@ export const App = () => {
   const chartData = groupedData
     .map((item, index) => {
       const currentValue = item.currentValue || item.totalValue;
+      // Use brand color if available, otherwise fall back to palette
+      const brandColor = getBrandColor(item.brandInfo?.colors, index, item.symbol);
+
       return {
         symbol: item.symbol,
         originalSymbol: item.symbol,
@@ -148,7 +188,7 @@ export const App = () => {
         currentValue: currentValue,
         volume: item.totalVolume,
         percentage: ((item.totalValue / totalPortfolioValue) * 100).toFixed(1),
-        fill: generateColor(index),
+        fill: brandColor,
       };
     })
     .sort((a, b) => b.value - a.value);
@@ -179,7 +219,7 @@ export const App = () => {
               <PortfolioDataTable
                 groupedData={groupedData}
                 totalPositions={portfolioData.length}
-                isLoadingQuotes={isLoadingQuotes}
+                isLoadingQuotes={isLoadingQuotes || isLoadingBrands}
               />
             </div>
             <PortfolioAllocationTable chartData={chartData} />

@@ -16,7 +16,29 @@ import {
 } from "@/components/ui/chart";
 import { GroupedPortfolio, ChartDataItem } from "@/types/portfolio";
 
-import { generateColor, getGradientColors } from "@/lib/utils";
+import { generateColor } from "@/lib/utils";
+
+// Helper to create gradient from a base color
+const createGradient = (baseColor: string, index: number) => {
+  // Simple brightness adjustment for gradient effect
+  const adjustBrightness = (hex: string, factor: number): string => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (!result) return hex;
+    
+    const r = Math.min(255, Math.max(0, Math.round(parseInt(result[1], 16) * factor)));
+    const g = Math.min(255, Math.max(0, Math.round(parseInt(result[2], 16) * factor)));
+    const b = Math.min(255, Math.max(0, Math.round(parseInt(result[3], 16) * factor)));
+    
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+  };
+
+  return {
+    id: `gradient-${index}`,
+    lighter: adjustBrightness(baseColor, 1.3),
+    base: baseColor,
+    darker: adjustBrightness(baseColor, 0.7),
+  };
+};
 
 interface PortfolioChartProps {
   groupedData: GroupedPortfolio[];
@@ -58,7 +80,7 @@ export function PortfolioChart({
           >
             <defs>
               {chartData.map((item, index) => {
-                const gradient = getGradientColors(index);
+                const gradient = createGradient(item.fill, index);
                 return (
                   <linearGradient
                     key={gradient.id}
@@ -89,7 +111,8 @@ export function PortfolioChart({
                 <ChartTooltipContent
                   formatter={(value, name, item) => {
                     const payload = item.payload;
-                    const gradient = getGradientColors(chartData.indexOf(payload));
+                    const payloadIndex = chartData.indexOf(payload);
+                    const gradient = createGradient(payload.fill, payloadIndex);
                     return (
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
@@ -115,7 +138,7 @@ export function PortfolioChart({
             />
             <Bar dataKey="value" radius={[0, 4, 4, 0]}>
               {chartData.map((entry, index) => {
-                const gradient = getGradientColors(index);
+                const gradient = createGradient(entry.fill, index);
                 return (
                   <Cell
                     key={`cell-${index}`}

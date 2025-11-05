@@ -1,3 +1,4 @@
+import { BrandInfo } from "@/lib/brandfetchApi";
 export interface GroupedPortfolio {
   symbol: string;
   totalVolume: number;
@@ -12,6 +13,7 @@ export interface GroupedPortfolio {
   currentValue?: number;
   profitLoss?: number;
   profitLossPercent?: number;
+  brandInfo?: BrandInfo;
 }
 
 export interface ChartDataItem {

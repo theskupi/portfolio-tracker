@@ -62,6 +62,29 @@ export const generateColor = (index: number): string => {
   return CUSTOM_PALETTE[baseIndex];
 };
 
+// Get brand color from BrandInfo, with fallback to palette
+export const getBrandColor = (
+  brandColors:
+    | Array<{ hex: string; type: string; brightness: number }>
+    | undefined,
+  fallbackIndex: number,
+  symbol?: string
+): string => {
+  // Only use fallback if no brand colors exist at all
+  if (!brandColors || brandColors.length === 0) {
+    return generateColor(fallbackIndex);
+  }
+
+  // Use only accent color
+  const accentColor = brandColors.find((c) => c.type === "accent");
+  if (accentColor) {
+    return accentColor.hex;
+  }
+
+  // If no accent color, fall back to palette
+  return generateColor(fallbackIndex);
+};
+
 // Get gradient colors for a given index (lighter, base, darker)
 export const getGradientColors = (index: number) => {
   const baseColor = generateColor(index);
