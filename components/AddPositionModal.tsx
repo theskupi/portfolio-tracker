@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { PlusIcon } from "lucide-react";
 
-interface AddPositionModalProps {
+export interface AddPositionModalProps {
   onAddPosition: (position: {
     symbol: string;
     volume: string;
@@ -119,9 +119,7 @@ export function AddPositionModal({ onAddPosition }: AddPositionModalProps) {
                 onChange={(e) => setSymbol(e.target.value)}
                 aria-invalid={!!errors.symbol}
               />
-              <FieldDescription>
-                Enter the stock ticker symbol
-              </FieldDescription>
+              <FieldDescription>Enter the stock ticker symbol</FieldDescription>
               {errors.symbol && (
                 <FieldError errors={[{ message: errors.symbol }]} />
               )}
@@ -138,9 +136,7 @@ export function AddPositionModal({ onAddPosition }: AddPositionModalProps) {
                 onChange={(e) => setVolume(e.target.value)}
                 aria-invalid={!!errors.volume}
               />
-              <FieldDescription>
-                Number of shares you own
-              </FieldDescription>
+              <FieldDescription>Number of shares you own</FieldDescription>
               {errors.volume && (
                 <FieldError errors={[{ message: errors.volume }]} />
               )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Navigation } from "../components/Navigation";
 import { UploadModal } from "../components/UploadModal";
 import { FileUploadContent } from "../components/FileUploadContent";
@@ -15,14 +15,8 @@ import { fetchMultipleStockQuotes } from "@/lib/stockApi";
 import { fetchMultipleBrandInfo } from "@/lib/brandfetchApi";
 import { GroupedPortfolio } from "@/types/portfolio";
 import { PortfolioAllocationTable } from "@/components/PortfolioAllocationTable";
-import { generateColor, getBrandColor } from "@/lib/utils";
+import { getBrandColor } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  CategoryBreakdown,
-  CategoryLabel,
-} from "@/components/CategoryBreakdown";
-import { SectorBreakdown, SectorLabel } from "@/components/SectorBreakdown";
-import { AddPositionModal } from "@/components/AddPositionModal";
 
 const STORAGE_KEY = "portfolio-tracker-data";
 const STORAGE_FILENAME_KEY = "portfolio-tracker-filename";
@@ -34,28 +28,8 @@ export const App = () => {
   const [isLoadingQuotes, setIsLoadingQuotes] = useState(false);
   const [isLoadingBrands, setIsLoadingBrands] = useState(false);
   const [enrichedData, setEnrichedData] = useState<GroupedPortfolio[]>([]);
-  const [categoryPercentages, setCategoryPercentages] = useState<
-    Record<CategoryLabel, number>
-  >({} as Record<CategoryLabel, number>);
-  const [sectorPercentages, setSectorPercentages] = useState<
-    Record<SectorLabel, number>
-  >({} as Record<SectorLabel, number>);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Memoize callbacks to prevent infinite re-renders
-  const handleCategoryPercentagesChange = useCallback(
-    (percentages: Record<CategoryLabel, number>) => {
-      setCategoryPercentages(percentages);
-    },
-    []
-  );
-
-  const handleSectorPercentagesChange = useCallback(
-    (percentages: Record<SectorLabel, number>) => {
-      setSectorPercentages(percentages);
-    },
-    []
-  );
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -129,6 +103,17 @@ export const App = () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
   };
 
+  const handleDeleteSymbol = (symbol: string) => {
+    // Remove all positions for the given symbol
+    const updatedData = portfolioData.filter(
+      (position) => position.symbol !== symbol
+    );
+    setPortfolioData(updatedData);
+
+    // Save to localStorage
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
+  };
+
   // Fetch brand information for all symbols
   const fetchBrandData = async (grouped: GroupedPortfolio[]) => {
     setIsLoadingBrands(true);
@@ -177,8 +162,6 @@ export const App = () => {
         fetchMultipleStockQuotes(symbols),
         fetchBrandData(grouped),
       ]);
-
-      console.log("Stock quotes", stockQuotes);
 
       // Enrich grouped data with current prices
       const enriched = groupedWithBrands.map((item) => {
@@ -260,10 +243,6 @@ export const App = () => {
         />
       </UploadModal>
 
-      <div className="fixed bottom-6 right-6 z-50">
-        <AddPositionModal onAddPosition={handleAddPosition} />
-      </div>
-
       <main className="container mx-auto px-4 py-8">
         {groupedData.length > 0 ? (
           <Tabs defaultValue="overview" className="w-full">
@@ -287,6 +266,8 @@ export const App = () => {
                   groupedData={groupedData}
                   totalPositions={portfolioData.length}
                   isLoadingQuotes={isLoadingQuotes || isLoadingBrands}
+                  handleAddPosition={handleAddPosition}
+                  onDeleteSymbol={handleDeleteSymbol}
                 />
               </div>
             </TabsContent>
