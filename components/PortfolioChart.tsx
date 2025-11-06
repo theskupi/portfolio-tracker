@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/chart";
 import { GroupedPortfolio, ChartDataItem } from "@/types/portfolio";
 
-import { generateColor } from "@/lib/utils";
+import { generateColor, getBestLogo } from "@/lib/utils";
 
 // Helper to create gradient from a base color
 const createGradient = (baseColor: string, index: number) => {
@@ -122,20 +122,17 @@ export function PortfolioChart({
                 <ChartTooltipContent
                   formatter={(value, name, item) => {
                     const payload = item.payload;
-                    const payloadIndex = chartData.indexOf(payload);
-                    const gradient = createGradient(payload.fill, payloadIndex);
+                    const logoUrl = getBestLogo(payload.brandInfo);
                     return (
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
-                          <div
-                            className="h-3 w-3 rounded-sm"
-                            style={{
-                              background: `linear-gradient(90deg, ${gradient.lighter}, ${gradient.base}, ${gradient.darker})`,
-                            }}
-                          />
-                          <span className="font-semibold">
-                            {payload.symbol}
-                          </span>
+                          {logoUrl && (
+                            <img
+                              src={logoUrl}
+                              alt={`${payload.symbol} logo`}
+                              className="h-10 w-10 rounded object-contain"
+                            />
+                          )}
                         </div>
                         <span className="text-sm">
                           Value: ${payload.currentValue.toFixed(2)}

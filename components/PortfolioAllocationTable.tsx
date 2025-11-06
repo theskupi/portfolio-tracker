@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { CategoryBreakdown, CategoryLabel } from "./CategoryBreakdown";
 import { SectorBreakdown, SectorLabel } from "./SectorBreakdown";
 import { BrandInfo } from "@/lib/brandfetchApi";
+import { getBestLogo } from "@/lib/utils";
 
 interface ChartDataItem {
   symbol: string;
@@ -49,28 +50,6 @@ interface PortfolioAllocationTableProps {
 
 const CATEGORIES_STORAGE_KEY = "portfolio-tracker-categories";
 const SECTORS_STORAGE_KEY = "portfolio-tracker-sectors";
-
-// Helper function to get the best logo from BrandInfo
-const getBestLogo = (brandInfo?: BrandInfo): string | null => {
-  if (!brandInfo || !brandInfo.logos || brandInfo.logos.length === 0) {
-    return null;
-  }
-
-  // Prioritize icon type logos
-  const iconLogo = brandInfo.logos.find((logo) => logo.type === "icon");
-  const logoToUse = iconLogo || brandInfo.logos[0];
-
-  if (!logoToUse.formats || logoToUse.formats.length === 0) {
-    return null;
-  }
-
-  // Prefer SVG format, then PNG
-  const svgFormat = logoToUse.formats.find((f) => f.format === "svg");
-  const pngFormat = logoToUse.formats.find((f) => f.format === "png");
-  const format = svgFormat || pngFormat || logoToUse.formats[0];
-
-  return format.src;
-};
 
 export function PortfolioAllocationTable({
   chartData,
