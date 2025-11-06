@@ -40,6 +40,24 @@ function isWithinIdealRange(actual: number, idealRange: string): boolean {
 }
 
 export function SectorBreakdown({ sectorPercentages }: SectorBreakdownProps) {
+  // Check if there's any sector data
+  const hasData = Object.values(sectorPercentages).some((value) => value > 0);
+
+  if (!hasData) {
+    return (
+      <div className="mt-4 p-4 border rounded-lg bg-muted/30">
+        <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+          <p className="text-muted-foreground text-sm mb-2">
+            No sector data available
+          </p>
+          <p className="text-muted-foreground text-xs">
+            Assign sectors to your symbols in the table above to see the breakdown
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mt-4 p-4 border rounded-lg bg-muted/30">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
