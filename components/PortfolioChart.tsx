@@ -17,7 +17,6 @@ import {
 import { GroupedPortfolio, ChartDataItem } from "@/types/portfolio";
 
 import { generateColor, getBestLogo } from "@/lib/utils";
-import { AddPositionModal, AddPositionModalProps } from "./AddPositionModal";
 
 // Helper to create gradient from a base color
 const createGradient = (baseColor: string, index: number) => {
