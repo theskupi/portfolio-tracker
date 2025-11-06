@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { BrandInfo } from "./brandfetchApi";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -94,4 +95,26 @@ export const getGradientColors = (index: number) => {
     base: baseColor,
     darker: adjustBrightness(baseColor, 0.7),
   };
+};
+
+// Helper function to get the best logo from BrandInfo
+export const getBestLogo = (brandInfo?: BrandInfo): string | null => {
+  if (!brandInfo || !brandInfo.logos || brandInfo.logos.length === 0) {
+    return null;
+  }
+
+  // Prioritize icon type logos
+  const iconLogo = brandInfo.logos.find((logo) => logo.type === "icon");
+  const logoToUse = iconLogo || brandInfo.logos[0];
+
+  if (!logoToUse.formats || logoToUse.formats.length === 0) {
+    return null;
+  }
+
+  // Prefer SVG format, then PNG
+  const svgFormat = logoToUse.formats.find((f) => f.format === "svg");
+  const pngFormat = logoToUse.formats.find((f) => f.format === "png");
+  const format = svgFormat || pngFormat || logoToUse.formats[0];
+
+  return format.src;
 };

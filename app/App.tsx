@@ -22,6 +22,7 @@ import {
   CategoryLabel,
 } from "@/components/CategoryBreakdown";
 import { SectorBreakdown, SectorLabel } from "@/components/SectorBreakdown";
+import { AddPositionModal } from "@/components/AddPositionModal";
 
 const STORAGE_KEY = "portfolio-tracker-data";
 const STORAGE_FILENAME_KEY = "portfolio-tracker-filename";
@@ -106,6 +107,26 @@ export const App = () => {
     setEnrichedData([]);
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(STORAGE_FILENAME_KEY);
+  };
+
+  const handleAddPosition = (position: {
+    symbol: string;
+    volume: string;
+    openPrice: string;
+  }) => {
+    // Create a new PortfolioRow from the manual position
+    const newPosition: PortfolioRow = {
+      symbol: position.symbol,
+      volume: position.volume,
+      openPrice: position.openPrice,
+    };
+
+    // Add to existing portfolio data
+    const updatedData = [...portfolioData, newPosition];
+    setPortfolioData(updatedData);
+
+    // Save to localStorage
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
   };
 
   // Fetch brand information for all symbols
@@ -238,6 +259,10 @@ export const App = () => {
           onClearData={handleClearData}
         />
       </UploadModal>
+
+      <div className="fixed bottom-6 right-6 z-50">
+        <AddPositionModal onAddPosition={handleAddPosition} />
+      </div>
 
       <main className="container mx-auto px-4 py-8">
         {groupedData.length > 0 ? (
