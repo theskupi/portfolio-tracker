@@ -147,7 +147,7 @@ export function PortfolioChart({
                 />
               }
             />
-            <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={32}>
+            <Bar dataKey="value" radius={[0, 4, 4, 0]}>
               {chartData.map((entry, index) => {
                 const gradient = createGradient(entry.fill, index);
                 return (

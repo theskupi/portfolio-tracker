@@ -347,7 +347,7 @@ export function PortfolioAllocationTable({
           <CardHeader>
             <CardTitle>Category Breakdown</CardTitle>
           </CardHeader>
-          <CardContent className="px-0">
+          <CardContent>
             <CategoryBreakdown categoryPercentages={categoryPercentages} />
           </CardContent>
         </Card>

@@ -69,7 +69,7 @@ export function CategoryBreakdown({
     },
   ];
 
-  const hasData = pieData.length > 0;
+  const hasData = Object.keys(categoryPercentages).length > 0;
 
   return (
     <div className="space-y-6">
@@ -94,14 +94,16 @@ export function CategoryBreakdown({
           </PieChart>
         </ChartContainer>
       ) : (
-        <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-          <p className="text-muted-foreground text-sm mb-2">
-            No category data available
-          </p>
-          <p className="text-muted-foreground text-xs">
-            Assign categories to your symbols in the table above to see the
-            breakdown
-          </p>
+        <div className="mt-4 p-4 border rounded-lg bg-muted/30">
+          <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+            <p className="text-muted-foreground text-sm mb-2">
+              No category data available
+            </p>
+            <p className="text-muted-foreground text-xs">
+              Assign categories to your symbols in the table above to see the
+              breakdown
+            </p>
+          </div>
         </div>
       )}
     </div>
