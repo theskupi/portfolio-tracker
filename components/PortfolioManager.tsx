@@ -17,6 +17,8 @@ import { PortfolioAllocationTable } from "./PortfolioAllocationTable";
 import { getBrandColor } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useModal } from "@/contexts/ModalContext";
+import { Button } from "@/components/ui/button";
+import { Upload } from "lucide-react";
 
 const STORAGE_KEY = "portfolio-tracker-data";
 const STORAGE_FILENAME_KEY = "portfolio-tracker-filename";
@@ -301,9 +303,13 @@ export function PortfolioManager() {
             <p className="text-gray-500 text-lg mb-4">
               No portfolio data loaded
             </p>
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-400 text-sm mb-8">
               Click "Upload File" to get started
             </p>
+            <Button onClick={() => setIsModalOpen(true)} className="gap-2">
+              <Upload className="h-4 w-4" />
+              Upload File
+            </Button>
           </div>
         )}
       </main>

@@ -3,8 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Navigation } from "@/components/Navigation";
-import { NavControls } from "@/components/NavControls";
 import { ModalProvider } from "@/contexts/ModalContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,9 +33,9 @@ export default async function RootLayout({
       >
         <ThemeProvider>
           <ModalProvider>
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-[#1a1d3a] dark:via-[#151729] dark:to-[#0f1119]">
               <Navigation>
-                <NavControls />
+                <ThemeToggle />
               </Navigation>
               {children}
             </div>

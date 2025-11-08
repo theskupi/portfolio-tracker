@@ -7,7 +7,7 @@ interface NavigationProps {
 
 export async function Navigation({ children }: NavigationProps) {
   return (
-    <nav className="border-b bg-white dark:bg-gray-900">
+    <nav className="border-b border-white/15 bg-white dark:bg-card/40 dark:backdrop-blur-xl">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
