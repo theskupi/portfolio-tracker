@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Navigation } from "../components/Navigation";
-import { UploadModal } from "../components/UploadModal";
-import { FileUploadContent } from "../components/FileUploadContent";
-import { PortfolioDataTable } from "../components/PortfolioDataTable";
-import { PortfolioChart } from "../components/PortfolioChart";
+import { UploadModal } from "./UploadModal";
+import { FileUploadContent } from "./FileUploadContent";
+import { PortfolioDataTable } from "./PortfolioDataTable";
+import { PortfolioChart } from "./PortfolioChart";
 import {
   parseXLSXFile,
   groupPortfolioData,
@@ -14,17 +13,18 @@ import {
 import { fetchMultipleStockQuotes } from "@/lib/stockApi";
 import { fetchMultipleBrandInfo } from "@/lib/brandfetchApi";
 import { GroupedPortfolio } from "@/types/portfolio";
-import { PortfolioAllocationTable } from "@/components/PortfolioAllocationTable";
+import { PortfolioAllocationTable } from "./PortfolioAllocationTable";
 import { getBrandColor } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useModal } from "@/contexts/ModalContext";
 
 const STORAGE_KEY = "portfolio-tracker-data";
 const STORAGE_FILENAME_KEY = "portfolio-tracker-filename";
 
-export const App = () => {
+export function PortfolioManager() {
+  const { isModalOpen, setIsModalOpen } = useModal();
   const [fileName, setFileName] = useState<string>("");
   const [portfolioData, setPortfolioData] = useState<PortfolioRow[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoadingQuotes, setIsLoadingQuotes] = useState(false);
   const [isLoadingBrands, setIsLoadingBrands] = useState(false);
   const [enrichedData, setEnrichedData] = useState<GroupedPortfolio[]>([]);
@@ -230,9 +230,7 @@ export const App = () => {
     .sort((a, b) => b.value - a.value);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <Navigation onUploadClick={() => setIsModalOpen(true)} />
-
+    <>
       <UploadModal open={isModalOpen} onOpenChange={setIsModalOpen}>
         <FileUploadContent
           fileName={fileName}
@@ -309,6 +307,6 @@ export const App = () => {
           </div>
         )}
       </main>
-    </div>
+    </>
   );
-};
+}

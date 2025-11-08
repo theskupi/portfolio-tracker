@@ -1,15 +1,11 @@
-"use client";
-
-import { Upload } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "./ThemeToggle";
 import { AuthButton } from "@/components/auth/auth-button";
+import { ReactNode } from "react";
 
 interface NavigationProps {
-  onUploadClick: () => void;
+  children?: ReactNode;
 }
 
-export function Navigation({ onUploadClick }: NavigationProps) {
+export async function Navigation({ children }: NavigationProps) {
   return (
     <nav className="border-b bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4 py-4">
@@ -19,11 +15,7 @@ export function Navigation({ onUploadClick }: NavigationProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Button onClick={onUploadClick} className="gap-2">
-              <Upload className="h-4 w-4" />
-              Upload File
-            </Button>
+            {children}
             <AuthButton />
           </div>
         </div>

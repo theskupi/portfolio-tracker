@@ -1,5 +1,5 @@
-import { App } from "@/app/App";
+import { PortfolioManager } from "@/components/PortfolioManager";
 
 export default function Home() {
-  return <App />;
+  return <PortfolioManager />;
 }
