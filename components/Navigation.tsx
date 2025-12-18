@@ -1,4 +1,3 @@
-import { AuthButton } from "@/components/auth/auth-button";
 import { ReactNode } from "react";
 import { Button } from "./ui/button";
 import { Upload } from "lucide-react";
@@ -22,7 +21,6 @@ export async function Navigation({ children }: NavigationProps) {
               <Upload className="h-4 w-4" />
               Upload File
             </Button>
-            <AuthButton />
           </div>
         </div>
       </div>
