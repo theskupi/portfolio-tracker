@@ -1,17 +1,12 @@
-import { AuthButton } from "@/components/auth/auth-button";
-
+import { ReactNode } from "react";
 import { Button } from "./ui/button";
 import { Upload } from "lucide-react";
-import { useModal } from "@/contexts/ModalContext";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
-export function Navigation() {
-  const { setIsModalOpen } = useModal();
+interface NavigationProps {
+  children?: ReactNode;
+}
 
-  const handleUploadClick = () => {
-    setIsModalOpen(true);
-  };
-
+export async function Navigation({ children }: NavigationProps) {
   return (
     <nav className="border-b border-white/15 bg-white dark:bg-card/40 dark:backdrop-blur-xl">
       <div className="container mx-auto px-4 py-4">
@@ -21,12 +16,11 @@ export function Navigation() {
           </div>
 
           <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Button onClick={handleUploadClick} className="gap-2">
+            {children}
+            <Button onClick={onUploadClick} className="gap-2">
               <Upload className="h-4 w-4" />
               Upload File
             </Button>
-            <AuthButton />
           </div>
         </div>
       </div>
